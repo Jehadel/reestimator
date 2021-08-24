@@ -6,12 +6,13 @@ import numpy as np
 from sqlalchemy import create_engine
 import gc
 
+import sqlalchemy
+
 class data_loading:
     #Create a Sql engine to work with
     def __init__(self):
         self.engine =  create_engine('sqlite:///HousesFrance2.sqlite3', echo=True)
         self.conn =  self.engine.connect()
-
 
     def data_load(self, year):
         """Function to load and initially format our data - especialy empty columns"""
@@ -59,7 +60,7 @@ class data_loading:
         df.dtypes
         for i in columns3:
             df = df[(~df.duplicated()) | (df[i].isnull())]
-        data_loading.data_to_sql(conn,df,2020)
+        data_loading.data_to_sql(conn,df,year)
         return print("success in reformatting data table")
 
 if __name__ == "__main__":
@@ -70,3 +71,18 @@ if __name__ == "__main__":
         #df =process_sql_using_pandas()
         del df
         gc.collect()
+
+
+create_engine(
+    # Equivalent URL:
+    # mysql+pymysql://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
+    sqlalchemy.engine.url.URL.create(
+        drivername="mysql+pymysql",
+        username='root',  # e.g. "my-database-user"
+        password='Juni1994',  # e.g. "my-database-password"
+        host='34.77.88.127',  # e.g. "127.0.0.1"
+        port=3306,  # e.g. 3306
+        database='Housing_France',  # e.g. "my-database-name"
+    ),
+    **db_config
+)
