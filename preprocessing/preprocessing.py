@@ -17,7 +17,7 @@ class Preprocessing_data:
 
     def conv_downcast(df):
         """
-        Downcast numeric type in dataframe df to save memory
+        Downcast numeric dtypes in dataframe df to save memory
         """
         float_cols = df.select_dtypes('float').columns
         int_cols = df.select_dtypes('integer').columns
@@ -28,7 +28,7 @@ class Preprocessing_data:
 
     def conv_date(col):
         """
-        Converti une colonne datestr 'col' en datetime format YYYY-MM-DD
+        Convert a datestr column 'col' to datetime format YYYY-MM-DD
         """
         return pd.to_datetime(col, format='%Y-%m-%d')
 
@@ -40,8 +40,12 @@ class Preprocessing_data:
                     subset=[col_name])
         return mod_df
 
-    # Remplace Sell by 1 and Others data by 0 => A REMPLACER PAR REQUETE SQL
+    # A REMPLACER PAR REQUETE SQL ???
     def remplacement_mutation(df):
+        """
+        Remplace Sale by 1 and Others type of mutation data by 0 in nature_mutation column of df
+        """
+
         replacement_mutation_dict = {
             'Vente': "1",
             'Vente terrain à bâtir': "0",
@@ -55,6 +59,9 @@ class Preprocessing_data:
         return df
 
     def cadastral_sector(df):
+        """
+        Get secteur_cadastral from id_parcelle and add a column to df
+        """
         df["secteur_cadastral"]= df["id_parcelle"].str.slice(5, 10)
 
         return df
