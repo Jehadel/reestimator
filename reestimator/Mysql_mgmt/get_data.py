@@ -17,7 +17,7 @@ engine =sqlalchemy.create_engine(
 
 conn = engine.connect().execution_options(stream_results=True)    
 
-class dloading  :
+class Dloading:
 #Load Libraries and Create engine Connection
 
     def load_data_chunk(table_name,chunksize):
@@ -30,9 +30,13 @@ class dloading  :
         
         return frame
 
-    def get_random_rows(table_name, numrows):
+    def get_random_rows(table_name, numrows, chunksize):
         conn = engine.connect().execution_options(stream_results=True)
-        df = pd.read_sql(f"""SELECT * FROM {table_name} dm ORDER BY RAND() LIMIT {numrows};""",conn)
+        frame = pd.DataFrame()
+        for chunk_dataframe in pd.read_sql(
+                f"""SELECT * FROM {table_name} dm ORDER BY RAND() LIMIT {numrows};""", conn, chunksize=chunksize):
+                print(f"Got dataframe w/{len(chunk_dataframe)} rows")
+                df= frame.append(chunk_dataframe)
         return df
 
     def get_all_rows(table_name):
@@ -61,6 +65,3 @@ class dloading  :
         """Export Data to Sql, if exists takes one of the two strings :  ['replace','append'] """
         df.to_sql(name=f'{str(tablename)}', con=conn, if_exists=f'{if_exists}', index=True)
         return print(f"the table {str(tablename)} was successfully loaded to DB")
-
-print(dloading.get_num_rows('data',1000))
-print(dloading.show_tables())
