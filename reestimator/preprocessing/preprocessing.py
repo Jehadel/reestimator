@@ -6,6 +6,7 @@ class Preprocessing_data:
     def __init__(self) -> None:
         pass
 
+
     def conv_int(col):
         """
         Convert a column 'col' dtype (str, float, int)
