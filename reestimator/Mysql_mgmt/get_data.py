@@ -57,6 +57,10 @@ class dloading  :
         df = pd.read_sql("""SELECT TABLE_NAME FROM information_schema.tables where TABLE_SCHEMA = 'Housing_France'""",conn2)
         return df
 
+    def data_to_sql(df, tablename, if_exists):
+        """Export Data to Sql, if exists takes one of the two strings :  ['replace','append'] """
+        df.to_sql(name=f'{str(tablename)}', con=conn, if_exists=f'{if_exists}', index=True)
+        return print(f"the table {str(tablename)} was successfully loaded to DB")
 
 print(dloading.get_num_rows('data',1000))
 print(dloading.show_tables())
