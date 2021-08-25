@@ -73,12 +73,13 @@ cd tmp
 reestimator-run
 ```
 
-
-
-
 # Description colonnes
 
 ## Colonnes conservées
+
+nom_de_colonne (numéro de colonne)
+description (dtype/conversion)
+_modif à faire_
 
 **id_mutation**(0)
 id keys (str)
