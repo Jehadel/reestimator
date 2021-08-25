@@ -65,3 +65,5 @@ class Dloading:
         """Export Data to Sql, if exists takes one of the two strings :  ['replace','append'] """
         df.to_sql(name=f'{str(tablename)}', con=conn, if_exists=f'{if_exists}', index=True)
         return print(f"the table {str(tablename)} was successfully loaded to DB")
+    
+        
