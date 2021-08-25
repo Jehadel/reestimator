@@ -209,4 +209,29 @@ class dloading:
 
 ### exploration.py
 
+
+
+
 ### preprocessing.py
+
+Methods (class Preprocessing_data) to preprocess data
+
+class Preprocessing_data:
+
+  def conv_int(col):
+  _Convert a column 'col' dtype (str, float, int) to the smallest type integer according to data_
+
+  def conv_downcast(df):
+  _Downcast numeric dtypes in dataframe df to save memory_
+
+  def conv_date(col):
+  _Convert a datestr column 'col' to datetime format YYYY-MM-DD_
+
+  def drop_rows_of_specific_column(df, col_name):
+  _Drop rows of specific columns with Nan_
+
+  def remplacement_mutation(df):
+  _Remplace Sale by 1 and Others type of mutation data by 0_
+
+  def cadastral_sector(df):
+  _Get secteur_cadastral from id_parcelle and add a column to df_
