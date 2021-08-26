@@ -17,20 +17,6 @@ class Data_loading:
                  database='Housing_France'):
         self.conn = self.establish_conn(username, password, host, port, database)
 
-    def establish_conn(self,username, password, host, port, database):
-        engine = sqlalchemy.create_engine(
-                sqlalchemy.engine.url.URL.create(
-                drivername="mysql+pymysql",
-                username='Estimators',  # e.g. "my-database-user"1777777777
-                password='Estimator2021',  # e.g. "my-database-password"
-                host='34.77.88.127',  # e.g. "127.0.0.1"
-                port=3306,  # e.g. 3306
-                database='Housing_France',  # e.g. "my-database-name"
-            ))
-
-        conn = engine.connect().execution_options(stream_results=True)
-        return conn
-
     def load_data_chunk(self, table_name, chunksize):
 
         frame = pd.DataFrame()
@@ -41,6 +27,7 @@ class Data_loading:
             frame = frame.append(chunk_dataframe)
 
         return frame
+
 
     def get_random_rows(self, table_name, numrows):
 
