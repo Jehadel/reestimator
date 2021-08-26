@@ -10,7 +10,7 @@ pandas
 scikit-learn
 matplotlib
 seaborn
-collections
+# collections
 
 # tests/linter
 black
@@ -24,6 +24,10 @@ gcsfs
 google-cloud-storage
 mlflow
 s3fs
+
+# SQL
+pymysql
+sqlalchemy
 
 # utilities
 six>=1.14
