@@ -10,19 +10,22 @@ class Exploration_data:
     def __init__(self, df):
         self.df = df
 
+
     def get_float_columns(self):
         """
         Get float columns
         """
-        list_floats = list(self.df.select_dtypes(include=['float64']).columns)
+        list_floats = list(self.df.select_dtypes(include=['float']).columns)
         return list_floats
+
 
     def get_int_columns(self):
         """
         Get integer columns
         """
-        list_int = list(self.df.select_dtypes(include=['int64']).columns)
+        list_int = list(self.df.select_dtypes(include=['int']).columns)
         return list_int
+
 
     def get_object_columns(self):
         """
@@ -30,6 +33,7 @@ class Exploration_data:
         """
         list_objects = list(self.df.select_dtypes(include=['O']).columns)
         return list_objects
+
 
     def get_count_of_missing_values(self):
         """
@@ -39,6 +43,7 @@ class Exploration_data:
             self.df.isnull().sum().sort_values(ascending=False))
         return missing_df
 
+
     def get_columns_with_missing_values(self):  #df dataframe
         """
         Get columns with missing values
@@ -46,6 +51,7 @@ class Exploration_data:
         missing_df = self.get_count_of_missing_values()
         missing_data = missing_df[missing_df[0] != 0]
         return missing_data
+
 
     def get_columns_without_missing_values(self):  #df dataframe
         """
@@ -55,14 +61,15 @@ class Exploration_data:
         clean_data = missing_df[missing_df[0] == 0]
         return clean_data
 
-    def get_count_missing_vals_in_1column(
-            self, col_name):  #df dataframe && col_name : name of column
+
+    def get_count_missing_vals_in_1column(self, col_name):  #df dataframe & col_name : name of column
         """
         Get the count of missing values in one column
         """
         missing_df = self.get_count_of_missing_values()
         ds_missing_values = self.df.shape[0] - missing_df.loc[col_name][0]
         return ds_missing_values
+
 
     def visualize_feature_types(self):
         """
@@ -83,6 +90,7 @@ class Exploration_data:
                     rot=0,
                     color=plt.cm.Paired(np.arange(3)))
 
+
     def visualize_type_local(self):
         """
         Visualize a plot bar with the number of each different types of local
@@ -99,6 +107,7 @@ class Exploration_data:
 
         plt.show()
 
+
     def visualize_lot_surface_columns(self):
         """
         Visualize a plot bar with the number of lot for columns "lot_number1-5"
@@ -109,7 +118,7 @@ class Exploration_data:
         ]
         K = []
         for i in L:
-            m = self.get_count_missing_vals_in_1column(self, col_name=i)
+            m = self.get_count_missing_vals_in_1column(col_name=i)
             K.append(m)
 
         dx = pd.DataFrame({
@@ -121,6 +130,7 @@ class Exploration_data:
                     rot=0,
                     color=plt.cm.Paired(np.arange(5)))
 
+
     def visualize_lot_numero_columns(self):
 
         L = [
@@ -129,7 +139,7 @@ class Exploration_data:
         ]
         K = []
         for i in L:
-            m = self.get_count_missing_vals_in_1column(self, col_name=i)
+            m = self.get_count_missing_vals_in_1column(col_name=i)
             K.append(m)
 
         dx = pd.DataFrame({

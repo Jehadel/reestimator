@@ -6,13 +6,15 @@ class Preprocessing_data:
     def __init__(self, df):
         self.df=df
 
-    def conv_int(col):
+
+    def conv_int(self,col):
         """
         Convert a column 'col' dtype (str, float, int)
         to the smallest type integer according to data
         """
         # to do : check if column mixed str (ex. '2A') and int. col.str.isnumeric()==False
         return pd.to_numeric(col, downcast='integer')
+
 
     def conv_downcast(self):
         """
@@ -22,14 +24,16 @@ class Preprocessing_data:
         int_cols = self.df.select_dtypes('integer').columns
 
         self.df[float_cols] = self.df[float_cols].apply(pd.to_numeric, downcast='float')
-        self.df[int_cols] = df[int_cols].apply(pd.to_numeric, downcast='integer')
+        self.df[int_cols] = self.df[int_cols].apply(pd.to_numeric, downcast='integer')
         return self.df
 
-    def conv_date(col):
+
+    def conv_date(self, col):
         """
-        Convert a datestr column 'col' to datetime format YYYY-MM-DD
+        Convert a date str column 'col' to datetime format YYYY-MM-DD
         """
         return pd.to_datetime(col, format='%Y-%m-%d')
+
 
     def drop_rows_of_specific_column(self, col_name):  #df dataframe
         """
@@ -39,7 +43,7 @@ class Preprocessing_data:
         return mod_df
 
 
-    # A REMPLACER PAR REQUETE SQL ???
+    # A REMPLACER PAR REQUETE SQL ??? A VOIR
     def remplacement_mutation(self):
         """
         Remplace Sale by 1 and Others type of mutation data by 0 in nature_mutation column of df
@@ -52,10 +56,11 @@ class Preprocessing_data:
             'Adjudication': "0",
             'Expropriation': "0"
         }
-        self.df['nature_mutation'] = df['nature_mutation'].replace(
+        self.df['nature_mutation'] = self.df['nature_mutation'].replace(
             replacement_mutation_dict)
 
         return self.df
+
 
     def cadastral_sector(self):
         """
@@ -65,3 +70,34 @@ class Preprocessing_data:
         cad_sector = self.df["secteur_cadastral"]
 
         return cad_sector
+
+
+    def filter_dependency(self, n_line):
+        """
+        Filter the dependencies in type_local columns
+        Parameters
+        ----------
+            df : intitial dataframe
+            n_lines : 'all' or number of lines
+
+        Returns
+        -------
+            Series with type_local filtered by dependency
+            Think to downcast in int8 after filtered dependency
+        """
+
+        df_gr = self.df.copy()
+        df_gr = df_gr[df_gr['type_local'] == 'Dépendance']
+        if n_line == 'all':
+            self.df = self.df.apply(lambda x: 1
+                        if x.id_mutation in df_gr.id_mutation.values else 0,
+                        axis=1)
+            rslt_df = self.df[(self.df['type_local'] != 'Dépendance')]
+            return rslt_df
+
+        else:
+            self.df = self.df.head(n_line).apply(
+                lambda x: 1 if x.id_mutation in df_gr.id_mutation.values else 0,
+                axis=1)
+            rslt_df = self.df[(self.df['type_local'] != 'Dépendance')]
+            return rslt_df
