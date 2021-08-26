@@ -25,7 +25,7 @@ class Preprocessing_data:
 
         self.df[float_cols] = self.df[float_cols].apply(pd.to_numeric, downcast='float')
         self.df[int_cols] = self.df[int_cols].apply(pd.to_numeric, downcast='integer')
-        return self.df
+
 
 
     def conv_date(self, col):
@@ -72,7 +72,7 @@ class Preprocessing_data:
         return cad_sector
 
 
-    def filter_dependency(self, n_line):
+    def filter_dependency(self, df, n_line='all'):
         """
         Filter the dependencies in type_local columns
         Parameters
@@ -83,21 +83,49 @@ class Preprocessing_data:
         Returns
         -------
             Series with type_local filtered by dependency
-            Think to downcast in int8 after filtered dependency
+            Think to downcast in int8 after filtered dependencies
         """
 
-        df_gr = self.df.copy()
-        df_gr = df_gr[df_gr['type_local'] == 'Dépendance']
+        df_gr = df.copy()
+        print(df)
+        print(df_gr)
+        df_gr = df_gr['type_local'] == 'Dépendance'
         if n_line == 'all':
-            self.df = self.df.apply(lambda x: 1
-                        if x.id_mutation in df_gr.id_mutation.values else 0,
-                        axis=1)
-            rslt_df = self.df[(self.df['type_local'] != 'Dépendance')]
+            df['Dependency'] = df.apply(
+                lambda x: 1
+                if x.id_mutation in df_gr.id_mutation.values else 0,
+                axis=1)
+            rslt_df = df[(self.df['type_local'] != 'Dépendance')]
             return rslt_df
 
         else:
-            self.df = self.df.head(n_line).apply(
-                lambda x: 1 if x.id_mutation in df_gr.id_mutation.values else 0,
+            df['Dependency'] = df.head(n_line).apply(
+                lambda x: 1
+                if x.id_mutation in df_gr.id_mutation.values else 0,
                 axis=1)
-            rslt_df = self.df[(self.df['type_local'] != 'Dépendance')]
+            rslt_df = df[(df['type_local'] != 'Dépendance')]
+            return rslt_df
+
+    def filter_dependency(self, df2, n_line='all'):
+        """
+        parameters
+        ----------
+            data: intitial dataframe
+
+        returns
+        -------
+            series with type_local filtered by dependency (downcoast to int8)
+        """
+
+
+        df_gr = df2[df2['type_local'] == 'Dépendance']
+
+        if n_line == 'all':
+            df2['Dependency']=df2.apply(lambda x: 1 if x.id_mutation in df_gr.id_mutation.values else 0, axis=1)
+            rslt_df = df2[(df2['type_local'] != 'Dépendance')]
+            return rslt_df
+
+        else:
+            df2['Dependency']=df2.head(n_line).apply(lambda x: 1 if x.id_mutation in df_gr.id_mutation.values else 0, axis=1)
+            rslt_df = df2[(df2['type_local'] != 'Dépendance')]
             return rslt_df
