@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class Preprocessing_data:
-    def __init__(self,df):
+    def __init__(self, df):
         self.df=df
 
     def conv_int(col):
@@ -38,12 +38,12 @@ class Preprocessing_data:
         mod_df = self.df.dropna(how='any', subset=[col_name])
         return mod_df
 
+
     # A REMPLACER PAR REQUETE SQL ???
     def remplacement_mutation(self):
         """
         Remplace Sale by 1 and Others type of mutation data by 0 in nature_mutation column of df
         """
-
         replacement_mutation_dict = {
             'Vente': "1",
             'Vente terrain à bâtir': "0",
@@ -62,5 +62,6 @@ class Preprocessing_data:
         Get secteur_cadastral from id_parcelle and add a column to df
         """
         self.df["secteur_cadastral"] = self.df["id_parcelle"].str.slice(5, 10)
+        cad_sector = self.df["secteur_cadastral"]
 
-        return self.df
+        return cad_sector
