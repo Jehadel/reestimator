@@ -5,9 +5,6 @@ import pandas as pd
 import numpy as np
 import sqlalchemy
 
-
-
-
 class Data_loading:
     """
     Load Libraries and Create engine Connection
@@ -75,7 +72,3 @@ class Data_loading:
                   if_exists=f'{if_exists}',
                   index=True)
         return print(f"the table {str(tablename)} was successfully loaded to DB")
-
-
-# print(dloading.get_num_rows('data', 1000))
-# print(dloading.show_tables())
