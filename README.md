@@ -151,34 +151,52 @@ utile seulement si on fouille dans le cadastre passé
 type du local, double emploi avec code_type_local (conservée)
 
 **code_nature_culture**(33)
-**nature_culture**(34)
-**code_nature_culture_speciale**(35)
-**nature_culture_speciale**(36)
-pas de corrélation avec valeur foncière
 
-## Colonnes qui posent question
+**nature_culture**(34)
+
+**code_nature_culture_speciale**(35)
+
+**nature_culture_speciale**(36)
+
+pas de corrélation des cols nature avec valeur foncière
+
+**lot1_numero**(18)
+
+**lot1_surface_carrez**(19)
+
+**lot2_numero**(20)
+
+**lot2_surface_carrez**(21)
+
+**lot3_numero**(22)
+
+**lot3_surface_carrez**(23)
+
+**lot4_numero**(24)
+
+**lot4_surface_carrez**(25)
+
+**lot5_numero**(26)
+
+**lot5_surface_carrez** (27)
+
+**nombre_lots**(28)
+pas de corr. avec valeur foncière, et pas toujours bien rempli
 
 **numero_disposition**(4)
-Numéro d'ordre si ventes simultanées.
-À conserver à priori pour différencier si ventes avec même id, à vérifier
+Numéro d'ordre si ventes simultanées. Pas toujours bien rempli
+
+## Colonnes qui posent question
 
 **code_postal**(10)
 code postal, différent du code commune, mais utilisé pour l'adressage
 
-**lot1_numero**(18)
-**lot1_surface_carrez**(19)
-**lot2_numero**(20)
-**lot2_surface_carrez**(21)
-**lot3_numero**(22)
-**lot3_surface_carrez**(23)
-**lot4_numero**(24)
-**lot4_surface_carrez**(25)
-**lot5_numero**(26)
-**lot5_surface_carrez** (27)
-a priori on vire, mais vérifier si congruence avec surface totale
+## Colonnes à créer
 
-**nombre_lots**(28)
-vérifier si incidence sur prix final, a priori on vire
+**Prix au m2**
+
+**Présence dépendance**
+
 
 # Description fonctions
 
