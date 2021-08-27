@@ -28,14 +28,11 @@ WHERE dwu.type_local IN('Appartement', 'Maison')
 GROUP BY code_commune, Code_post, nom_commune, dwu.type_local;
 """
 
-
+#Obtain Our data for the app
 getting_data = Data_loading()
 df = getting_data.get_data(querystring)
-
-
 url = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/communes-version-simplifiee.geojson'
 response =  requests.get(url).json()
-
 df2 = df[df['type'] == 'Appartement']
 geodf = df2[['commune','transactions']]
 
@@ -43,7 +40,6 @@ geodf = df2[['commune','transactions']]
 def transform_string(string, separator):
     L = string.split(separator)
     return L[0] if L[0] in ['Paris', 'Marseille', 'Lyon'] else L[0]
-
 geodf.commune = geodf.commune.apply(lambda x: transform_string(x,' '))
 geodf = geodf.groupby(geodf.commune).sum().reset_index(drop=False)
 
