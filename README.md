@@ -113,9 +113,8 @@ code de la commune sur le plan cadastral
 agrége code commune / code secteur cadastral / numéro parcelle
 _extraire le code secteur cadastral dans autre colonne_
 
-**code_type_local**(29)
-encodage du type de local. seul 1 (maison), 2 (appartement), et 3 (dépendance, à transformer) nous intéresse (à convertir en int8)
-_supprimer ligne pour 3 (dépendance) et ajouter une colonne binaire "bien avec dépendance" -> influence sur le prix ?_
+**type_local**(30)
+type du local : maison ou appartement (dépendance est encodée dans une nouvelle colonne)
 
 **surface_reelle_bati**(31)
 un de nos rares prédicteurs (convertir en int32)
@@ -147,8 +146,8 @@ utile seulement si on fouille dans le cadastre passé
 **numero_volume**(17)
 utile seulement si on fouille dans le cadastre passé
 
-**type_local**(30)
-type du local, double emploi avec code_type_local (conservée)
+**code_type_local**(29)
+encodage du type de local. double emploi avec type_local (conservée)
 
 **code_nature_culture**(33)
 
