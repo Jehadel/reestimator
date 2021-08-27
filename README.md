@@ -113,9 +113,8 @@ code de la commune sur le plan cadastral
 agrége code commune / code secteur cadastral / numéro parcelle
 _extraire le code secteur cadastral dans autre colonne_
 
-**code_type_local**(29)
-encodage du type de local. seul 1 (maison), 2 (appartement), et 3 (dépendance, à transformer) nous intéresse (à convertir en int8)
-_supprimer ligne pour 3 (dépendance) et ajouter une colonne binaire "bien avec dépendance" -> influence sur le prix ?_
+**type_local**(30)
+type du local : maison ou appartement (dépendance est encodée dans une nouvelle colonne)
 
 **surface_reelle_bati**(31)
 un de nos rares prédicteurs (convertir en int32)
@@ -147,38 +146,56 @@ utile seulement si on fouille dans le cadastre passé
 **numero_volume**(17)
 utile seulement si on fouille dans le cadastre passé
 
-**type_local**(30)
-type du local, double emploi avec code_type_local (conservée)
+**code_type_local**(29)
+encodage du type de local. double emploi avec type_local (conservée)
 
 **code_nature_culture**(33)
-**nature_culture**(34)
-**code_nature_culture_speciale**(35)
-**nature_culture_speciale**(36)
-pas de corrélation avec valeur foncière
 
-## Colonnes qui posent question
+**nature_culture**(34)
+
+**code_nature_culture_speciale**(35)
+
+**nature_culture_speciale**(36)
+
+pas de corrélation des cols nature avec valeur foncière
+
+**lot1_numero**(18)
+
+**lot1_surface_carrez**(19)
+
+**lot2_numero**(20)
+
+**lot2_surface_carrez**(21)
+
+**lot3_numero**(22)
+
+**lot3_surface_carrez**(23)
+
+**lot4_numero**(24)
+
+**lot4_surface_carrez**(25)
+
+**lot5_numero**(26)
+
+**lot5_surface_carrez** (27)
+
+**nombre_lots**(28)
+pas de corr. avec valeur foncière, et pas toujours bien rempli
 
 **numero_disposition**(4)
-Numéro d'ordre si ventes simultanées.
-À conserver à priori pour différencier si ventes avec même id, à vérifier
+Numéro d'ordre si ventes simultanées. Pas toujours bien rempli
+
+## Colonnes qui posent question
 
 **code_postal**(10)
 code postal, différent du code commune, mais utilisé pour l'adressage
 
-**lot1_numero**(18)
-**lot1_surface_carrez**(19)
-**lot2_numero**(20)
-**lot2_surface_carrez**(21)
-**lot3_numero**(22)
-**lot3_surface_carrez**(23)
-**lot4_numero**(24)
-**lot4_surface_carrez**(25)
-**lot5_numero**(26)
-**lot5_surface_carrez** (27)
-a priori on vire, mais vérifier si congruence avec surface totale
+## Colonnes à créer
 
-**nombre_lots**(28)
-vérifier si incidence sur prix final, a priori on vire
+**Prix au m2**
+
+**Présence dépendance**
+
 
 # Description fonctions
 
