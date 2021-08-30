@@ -72,3 +72,183 @@ mkdir tmp
 cd tmp
 reestimator-run
 ```
+
+# Description colonnes
+
+## Colonnes conservées
+
+nom_de_colonne (numéro de colonne)
+description (dtype/conversion)
+_modif à faire_
+
+**id_mutation**(0)
+id keys (str)
+
+**date_mutation**(1)
+date de la mutation (à convertir en datetime)
+
+**nature_mutation**(3)
+nature de la mutation : vente, partage, adjucation (str)
+_conserver seulement les lignes 'ventes', envoyer les autres dans la table 'non-traité'
+
+**valeur_fonciere**(5)
+notre target ! (à convertir en int32)
+
+**adresse_numero**(6)
+numéro dans la rue (adresse) (à convertir en int8)
+
+**adresse_suffixe**(7)
+suffixe numéro d'adresse : A, B, bis, ter... (str)
+
+**adresse_nom_voie**(8)
+nom de la rue (str)
+
+**code_commune**(11)
+code de la commune sur le plan cadastral
+
+**code_departement**(12)
+(str à cause de la Corse)
+
+**id_parcelle**(15)
+agrége code commune / code secteur cadastral / numéro parcelle
+_extraire le code secteur cadastral dans autre colonne_
+
+**type_local**(30)
+type du local : maison ou appartement (dépendance est encodée dans une nouvelle colonne)
+
+**surface_reelle_bati**(31)
+un de nos rares prédicteurs (convertir en int32)
+
+**nombre_pieces_principales**(32)
+un de nos rares prédicteurs (convertir en int32)
+
+**surface_terrain**(37)
+un de nos rares prédicteurs(convertir en int32)
+
+**longitude**(38)
+**latitude**(39)
+coordonnées pour la géolocalisation (float 64)
+_il y a des communes non vectorisées où la géolocalisation n'est pas dispo_
+
+## Colonnes supprimées
+
+**adresse_code_voie**(9)
+code FANTOR pour l'administration
+
+**ancien_code_commune**(13)
+
+**ancien_nom_commune**(14)
+utile seulement si on fouille dans le cadastre passé
+
+**ancien_id_parcelle**(16)
+utile seulement si on fouille dans le cadastre passé
+
+**numero_volume**(17)
+utile seulement si on fouille dans le cadastre passé
+
+**code_type_local**(29)
+encodage du type de local. double emploi avec type_local (conservée)
+
+**code_nature_culture**(33)
+
+**nature_culture**(34)
+
+**code_nature_culture_speciale**(35)
+
+**nature_culture_speciale**(36)
+
+pas de corrélation des cols nature avec valeur foncière
+
+**lot1_numero**(18)
+
+**lot1_surface_carrez**(19)
+
+**lot2_numero**(20)
+
+**lot2_surface_carrez**(21)
+
+**lot3_numero**(22)
+
+**lot3_surface_carrez**(23)
+
+**lot4_numero**(24)
+
+**lot4_surface_carrez**(25)
+
+**lot5_numero**(26)
+
+**lot5_surface_carrez** (27)
+
+**nombre_lots**(28)
+pas de corr. avec valeur foncière, et pas toujours bien rempli
+
+**numero_disposition**(4)
+Numéro d'ordre si ventes simultanées. Pas toujours bien rempli
+
+## Colonnes qui posent question
+
+**code_postal**(10)
+code postal, différent du code commune, mais utilisé pour l'adressage
+
+## Colonnes à créer
+
+**Prix au m2**
+
+**Présence dépendance**
+
+
+# Description fonctions
+
+## Preprocessing
+
+### get_data.py
+
+Methods (class dloading) to get datas (DataFrame) from the database Housing_France
+
+class dloading:
+  load_data_chunk(table_name,chunksize)
+  _Loads a dataframe by chunks of size chunksize from table database_
+
+  get_random_rows(table_name, numrows)
+  _Loads a dataframe of size numrows from random lines of the table database_
+
+  get_all_rows(table_name)
+  _Loads a dataframe from an entire database table_
+
+  get_num_rows(table_name, rownums)
+  _Loads a dataframe of size rownums  from database table_
+
+  show_tables()
+  _show all the tables in the database Housing_France_
+
+  data_to_sql(df, tablename, if_exists)
+  _Export Data to Sql, if exists takes one of the two strings :  ['replace','append']_
+
+### exploration.py
+
+
+
+
+### preprocessing.py
+
+Methods (class Preprocessing_data) to preprocess data
+
+class Preprocessing_data:
+
+  def conv_int(col):
+  _Convert a column 'col' dtype (str, float, int) to the smallest type integer according to data_
+
+  def conv_downcast(df):
+  _Downcast numeric dtypes in dataframe df to save memory_
+
+  def conv_date(col):
+  _Convert a datestr column 'col' to datetime format YYYY-MM-DD_
+
+  def drop_rows_of_specific_column(df, col_name):
+  _Drop rows of specific columns with Nan_
+
+  def remplacement_mutation(df):
+  _Remplace Sale by 1 and Others type of mutation data by 0_
+
+  def cadastral_sector(df):
+  _Get secteur_cadastral from id_parcelle and add a column to df_
