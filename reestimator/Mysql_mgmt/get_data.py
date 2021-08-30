@@ -17,6 +17,19 @@ class Data_loading:
                  database='Housing_France'):
         self.conn = self.establish_conn(username, password, host, port, database)
 
+
+    def establish_conn(self,username, password, host, port, database):
+        engine = sqlalchemy.create_engine(
+                sqlalchemy.engine.url.URL.create(
+                drivername="mysql+pymysql",
+                username='Estimators',  # e.g. "my-database-user"1777777777
+                password='Estimator2021',  # e.g. "my-database-password"
+                host='34.77.88.127',  # e.g. "127.0.0.1"
+                port=3306,  # e.g. 3306
+                database='Housing_France',  # e.g. "my-database-name"
+            ))
+        return engine
+
     def load_data_chunk(self, table_name, chunksize):
 
         frame = pd.DataFrame()
@@ -40,13 +53,14 @@ class Data_loading:
         df = pd.read_sql(f"""SELECT * FROM {table_name} """, self.conn)
         return df
 
-    def get_num_rows(self, table_name, rownums):
+    def get_num_rows(self,table_name, rownums):
         df = pd.read_sql(f"""SELECT * FROM {table_name} Limit {rownums} """,
                          self.conn)
+
         return df
 
     def show_tables(self):
-
+        print(self.conn)
         df = pd.read_sql(
         """SELECT TABLE_NAME FROM information_schema.tables where TABLE_SCHEMA = 'Housing_France'""",
             self.conn)
@@ -59,3 +73,7 @@ class Data_loading:
                   if_exists=f'{if_exists}',
                   index=True)
         return print(f"the table {str(tablename)} was successfully loaded to DB")
+
+    def get_data(self, querystring):
+        df = pd.read_sql(querystring, self.conn)
+        return df
