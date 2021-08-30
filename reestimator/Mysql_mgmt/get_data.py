@@ -56,7 +56,6 @@ class Data_loading:
     def get_num_rows(self,table_name, rownums):
         df = pd.read_sql(f"""SELECT * FROM {table_name} Limit {rownums} """,
                          self.conn)
-
         return df
 
     def show_tables(self):
@@ -77,3 +76,4 @@ class Data_loading:
     def get_data(self, querystring):
         df = pd.read_sql(querystring, self.conn)
         return df
+      
