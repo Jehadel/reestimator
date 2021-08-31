@@ -8,6 +8,8 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
+matplotlib
+seaborn
 
 # tests/linter
 black
@@ -21,9 +23,19 @@ gcsfs
 google-cloud-storage
 mlflow
 s3fs
+fastapi
+uvicorn
+
+# SQL
+pymysql
+sqlalchemy
 
 # utilities
 six>=1.14
 joblib
 memoized-property
-termcolor
+# termcolor
+mlflow
+
+# website
+streamlit
