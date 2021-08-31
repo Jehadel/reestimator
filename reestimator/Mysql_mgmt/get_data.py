@@ -33,7 +33,7 @@ class Data_loading:
     def load_data_chunk(self, table_name, chunksize):
 
         frame = pd.DataFrame()
-        for chunk_dataframe in pd.read_sql(f"""Select * from {table_name}""",
+        for chunk_dataframe in pd.read_sql(f"""SELECT * , ROUND(dwu.valeur_fonciere/dwu.surface_reelle_bati,0) AS Prixm2 FROM {table_name} dwu""",
                                            self.conn,
                                            chunksize=chunksize):
             print(f"Got dataframe w/{len(chunk_dataframe)} rows")
@@ -76,4 +76,3 @@ class Data_loading:
     def get_data(self, querystring):
         df = pd.read_sql(querystring, self.conn)
         return df
-      
