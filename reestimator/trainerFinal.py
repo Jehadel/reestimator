@@ -21,8 +21,41 @@ from xgboost import plot_importance
 
 
 class Trainer():
-    """ Initialize dataframe
-    """
+     """
+    Parameters :
+    ** df : DataFrame , Data
+    ** col_list : list,  List of features tu use in training.
+    Please see an example to set col_list in github :
+    https://github.com/Jehadel/reestimator/blob/KenzaTrainer/notebooks/Kenza/Kenza_git_class%20Trainer().ipynb
+
+    ** target_var:string,  target variable
+    ** scaler , object = StandardScaler() or RobustScaler()
+    ** model : string, The model we use in training
+    Please use  "Lasso" for Lasso() model
+                "Ridge" for Ridge model
+                "RandomForest" for RandomForest() model
+                "XGBoost" for XGBoost() model
+
+    # params_cv : dict. We used it in RandomizedSearchCV(estimator,param_distributions = params_cv, .....)
+
+    # nsplits : arguments in KFold(n_splits= splits)
+    # randomsearch_dict : dict, We used it in
+    RandomizedSearchCV(..., n_iter = randomsearch_dict['forest_iter'], ...)
+
+    Please set different values for reg, forest, and xgboost
+                    reg = 2
+                    forest = 2
+                    xgboost = 2
+        randomsearch_dict = {"reg_iter": reg,
+                  "forest_iter": forest,
+                   "xgboost_iter": xgboost}
+
+    Here, we use dictionary for the randomized search ----> randomsearch_dict
+
+    ** scor:string, we use it in RandomizedSearchCV(...,scoring = scor, ...)
+    Used to evaluate the performance of the cross-validated model on the test set.
+        """
+
     def __init__(self, df, col_list, target_var,
                  scaler,model,params_cv, randomsearch_dict,
                                    nsplits = 10,
