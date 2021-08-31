@@ -53,7 +53,7 @@ class Preproc:
 
 
 
-    def drop_2quant(self, target='prixmetre', quant_inf=0.25, quant_sup=0.75):
+    def drop_2quant(self, target='prixmetre', quant_inf=0.05, quant_sup=0.05):
         """
         cuts a dataframe df values quantiles
         """
@@ -62,7 +62,7 @@ class Preproc:
         filter = (self.df[target] <= inf) | (self.df[target] >= sup)
         return self.df.drop(self.df[filter].index, axis=0)
 
-    def remove_outliers_1(self, target='prixmetre', area='code_departement', quant_inf = 0.25, quant_sup = 0.75):
+    def remove_outliers_1(self, target='prixmetre', area='code_departement', quant_inf = 0.05, quant_sup = 0.85):
         """
         Function used to choose the method to limit the min and max outliers
         """
