@@ -21,7 +21,8 @@ BUCKET_TRAINING_FOLDER = 'trainings'
 
 ##### Model - - - - - - - - - - - - - - - - - - - - - - - -
 
-# not required here
+MODEL_NAME = 'regression'
+MODEL_VERSION = 'version'$(shell date +'%Y%m%d_%H%M%S')
 
 ### GCP AI Platform - - - - - - - - - - - - - - - - - - - -
 
@@ -41,6 +42,7 @@ FILENAME=trainerFinal
 ##### Job - - - - - - - - - - - - - - - - - - - - - - - - -
 
 JOB_NAME=reestimator_training$(shell date +'%Y%m%d_%H%M%S')
+
 
 
 run_locally:

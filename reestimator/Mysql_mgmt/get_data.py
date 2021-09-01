@@ -4,6 +4,8 @@ import pymysql
 import pandas as pd
 import numpy as np
 import sqlalchemy
+from google.cloud import storage
+#from ipdb import set_trace
 
 class Data_loading:
     """
@@ -75,4 +77,20 @@ class Data_loading:
 
     def get_data(self, querystring):
         df = pd.read_sql(querystring, self.conn)
+        return df
+
+
+    #@simple_time_tracker
+    def get_data_from_gcp(self, nrows='all', local=False, **kwargs):
+        """method to get the training data (or a portion of it) from google cloud bucket"""
+        # Add Client() here
+        client = storage.Client()
+        if local:
+            path = "/media/jean/DATA/data_Marseille.csv"
+        else:
+            path = "gs://reestimator/data/data_Marseille.csv"
+        if nrows == 'all':
+            df = pd.read_csv(path)
+        else:
+            df = pd.read_csv(path, nrows=nrows)
         return df

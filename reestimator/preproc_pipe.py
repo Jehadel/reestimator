@@ -6,7 +6,6 @@ class Preproc:
     def __init__(self, df):
         self.df = df
 
-
     def remove_dom_tom(self):
         """
         Function to remove DOM-TOM : 971 = Guadeloupe, 972=Martinique, 973=Guyane,
@@ -41,8 +40,6 @@ class Preproc:
         filter = (self.df['code_departement'] == 18) & (self.df['type_local'] == 'Maison')
         return self.df.drop(self.df[filter].index, axis=0, inplace = True)
 
-
-
     def create_pricemeter(self):
         """
         Function to calculate the price/squared meters
@@ -52,8 +49,6 @@ class Preproc:
             'valeur_fonciere'].values / self.df['surface_reelle_bati'].values
         # pd.options.display.float_format = '{:.2f}'.format  # pour remettre en format non scientifique
         return self.df
-
-
 
     def drop_2quant(self, df, target='prixmetre', quant_inf=0.05, quant_sup=0.95):
         """
@@ -76,11 +71,9 @@ class Preproc:
         self.df = df_cut
         return df_cut
 
-
     def remove_outliers_2(self, target='prixmetre', area='code_departement', quant_inf = 0.25, quant_sup = 0.75):
 
         df_outliers = pd.DataFrame()
-
         for i in self.df[area].unique():
             df_temp = self.df[self.df[area] == i]
             quant_inf = df_temp[target].quantile(0.25)

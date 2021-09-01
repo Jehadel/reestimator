@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Import packages
+from reestimator.Mysql_mgmt.get_data import Data_loading
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, RobustScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split, RandomizedSearchCV, KFold
 import pandas as pd
 import numpy as np
@@ -10,6 +11,8 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression , Ridge , Lasso
 from sklearn.metrics import mean_absolute_percentage_error as mape
 from sklearn.metrics import mean_squared_error as rmse
+import joblib
+from google.cloud import storage
 
 from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -18,6 +21,8 @@ from sklearn.metrics import r2_score
 import xgboost as xgb
 from xgboost.sklearn import XGBRegressor
 from xgboost import plot_importance
+
+BUCKET_NAME='reestimator'
 
 
 class Trainer():
@@ -42,6 +47,8 @@ class Trainer():
         # define dataset
         y = self.df[self.target_var]
         X = self.df[self.col_list]
+        print(self.col_list)
+        print(X.columns)
         return X,y
 
 
@@ -86,7 +93,6 @@ class Trainer():
 
 
         return modelo
-
 
 
     def evaluate(self, model, X_train, X_test, y_train, y_test):
@@ -184,18 +190,185 @@ class Trainer():
 
         X_train, X_test, y_train, y_test= self.holdout(X, y)
         X_train_sc, X_test_sc = self.scale(X_train, X_test)
+        print(X_train_sc[:5])
+        print(X_train_sc.shape)
+        print(y_train.shape)
+        print(type(X_train_sc))
+        print(type(y_train))
         res = search.fit(X_train_sc, y_train)
 
          # summarize result
         print('Best Score: %s' % res.best_score_)
         print('Best Hyperparameters: %s' % res.best_params_)
 
-        model = self.set_model(self.model)
+        self.model = self.set_model(self.model)
 
-        best = model.set_params(**res.best_params_)
+        best = self.model.set_params(**res.best_params_)
         #print("model  ", model)
 
         # train and predict
         result = self.evaluate(best, X_train_sc, X_test_sc, y_train, y_test)
 
         return result
+
+    # def save_model(self, model_name):
+    #     """Save the model into a .joblib format"""
+    #     joblib.dump(self.pipeline, f'{model_name}.joblib')
+    #     print(colored(f"[{model_name}] saved locally", "green"))
+
+    def save_model_to_gcp(self, model_name):
+        """Save the model into a .joblib and upload it on Google Storage /models folder
+        HINTS : use sklearn.joblib (or jbolib) libraries and google-cloud-storage"""
+        local_model_name = f'{model_name}.joblib'
+        # saving the trained model to disk (which does not really make sense
+        # if we are running this code on GCP, because then this file cannot be accessed once the code finished its execution)
+        joblib.dump(self.model, local_model_name)
+        print("saved model.joblib locally")
+        client = storage.Client().bucket(BUCKET_NAME)
+        storage_location = f"models/{local_model_name}"
+        blob = client.blob(storage_location)
+        blob.upload_from_filename(local_model_name)
+        print("uploaded model.joblib to gcp cloud storage under \n => {}".format(storage_location))
+
+class Encoder():
+
+    """ Initialize dataframe
+    """
+    def __init__(self, df):
+
+        self.df = df
+
+    def execute(self, col_name):
+
+        L = list(self.df[col_name].unique())
+        if '' in L:
+            self.df[col_name].replace("", "NoValue", inplace=True) #Replace NaN by "NoCodeNature"
+
+        ohe = OneHotEncoder(sparse = False) # Instanciate encoder
+        ohe.fit(self.df[[col_name]]) # Fit encoder  ---> OneHotEncoder(sparse=False)
+
+        col_encoded = ohe.transform(self.df[[col_name]]) # Encode
+
+        dicts_col = {}
+        keys = list(ohe.categories_[0])
+        values = col_encoded.T.astype(int)
+
+        for i,j in enumerate(keys):
+            dicts_col[j] = values[i,:]
+
+        result = pd.DataFrame.from_dict(dicts_col)
+
+        self.df = self.df.reset_index(drop=True)
+
+        #Concat df and result dataframes
+        data_res = pd.concat([self.df, result], axis = 1)
+
+        if 'NoValue' in list(data_res.columns):
+            data_res = data_res.drop(columns= ['NoValue',col_name] )
+        else:
+            data_res = data_res.drop(columns= col_name)
+
+        return data_res
+
+if __name__ == '__main__':
+
+    ###################
+    #
+    # preparation datas
+    #
+    ####################
+    df_data = Data_loading().get_data_from_gcp(local=True)
+
+    encoder = Encoder(df_data)
+    df_data = encoder.execute(col_name = 'nom_commune')
+    encoder2 = Encoder(df_data)
+    df_data = encoder2.execute(col_name = 'type_local')
+
+    #selection des colonnes
+    cols = list(df_data.columns)
+
+    columns_todrop = ['id_mutation', 'date_mutation', 'nature_mutation',
+            'adresse_nom_voie', 'adresse_code_voie',
+    'code_commune', 'code_postal',
+    'code_departement',
+    'id_parcelle', 'valeur_fonciere']
+
+
+    for i in columns_todrop:
+        cols.remove(i)
+
+    cols_removd_target = cols[:]
+    cols_removd_target.remove('Prixm2') # target variables are removed
+
+
+    ######################
+    #
+    #    LASSO
+    # Example of parameters for randomsearch for LASSO  model :**
+    #
+    ########################
+
+
+    # n_estimators = [1, 10, 50, 100, 200]
+    #                                                                                     #in the random forest
+    # max_features = ['sqrt', 'log2'] # number of features in consideration at every split
+    # max_depth = [int(x) for x in np.linspace(10, 120, num = 3)] # maximum number of levels
+    #                                                                         #allowed in each decision tree
+    # min_samples_split = [0.1, 0.3, 0.5, 0.8] # minimum sample number to split a node
+    # min_samples_leaf = [0.1, 0.2, 0.3] # minimum sample number that can be stored in a leaf node
+    # min_impurity_decrease = [0.01, 0.1, 1, 5, 10]
+    # bootstrap = [True, False] # method used to sample data points
+
+    # params_cv_lasso =  {'fit__alpha':[0.001, 0.005, 0.01, 0.05, 0.1, 0.06]}
+
+    # reg = 10
+    # forest = 10
+    # xgboost = 10
+
+    # randomsearch_dict = {"reg_iter": reg,
+    #                       "forest_iter": forest,
+    #                        "xgboost_iter": xgboost}
+
+    # traitement = Trainer(df_data, cols_removd_target, 'Prixm2', RobustScaler(), 'RandomForest', params_cv_forest, randomsearch_dict)
+    # traitement.execute()
+    # traitement.save_model_to_gcp('RandomForest')
+
+
+    ######################
+    #
+    #    RANDOM FOREST
+    # Example of parameters for randomsearch for Randomforest model :**
+    #
+    ########################
+
+
+    n_estimators = [1, 10, 50, 100, 200]
+                                                                                        #in the random forest
+    max_features = ['sqrt', 'log2'] # number of features in consideration at every split
+    max_depth = [int(x) for x in np.linspace(10, 120, num = 3)] # maximum number of levels
+                                                                            #allowed in each decision tree
+    min_samples_split = [0.1, 0.3, 0.5, 0.8] # minimum sample number to split a node
+    min_samples_leaf = [0.1, 0.2, 0.3] # minimum sample number that can be stored in a leaf node
+    min_impurity_decrease = [0.01, 0.1, 1, 5, 10]
+    bootstrap = [True, False] # method used to sample data points
+
+    params_cv_forest = {'n_estimators': n_estimators,
+            'max_features': max_features,
+            'max_depth': max_depth,
+            'min_samples_split': min_samples_split,
+            'min_samples_leaf': min_samples_leaf,
+            'bootstrap': bootstrap,
+            'min_impurity_decrease': min_impurity_decrease
+            }
+
+    reg = 10
+    forest = 10
+    xgboost = 10
+
+    randomsearch_dict = {"reg_iter": reg,
+                          "forest_iter": forest,
+                           "xgboost_iter": xgboost}
+
+    traitement = Trainer(df_data, cols_removd_target, 'Prixm2', RobustScaler(), 'RandomForest', params_cv_forest, randomsearch_dict)
+    traitement.execute()
+    traitement.save_model_to_gcp('RandomForest')

@@ -22,20 +22,7 @@ def lancement_cleanin_local(df):
     # print("database écrite. Fin.")
 
 ​
-@simple_time_tracker
-def get_data_from_gcp(nrows='all', local=False, **kwargs):
-    """method to get the training data (or a portion of it) from google cloud bucket"""
-    # Add Client() here
-    client = storage.Client()
-    if local:
-        path = "data/data_data_10Mill.csv"
-    else:
-        path = "gs://reestimator/"
-        if nrows == 'all':
-            df = pd.read_csv(path)
-        else:
-            df = pd.read_csv(path, nrows=nrows)
-    return df
+
 ​
 # def get_data(nrows=10_000):
 #     '''returns a DataFrame with nrows from s3 bucket'''

@@ -10,6 +10,7 @@ pandas
 scikit-learn
 matplotlib
 seaborn
+xgboost
 
 # tests/linter
 black
@@ -36,6 +37,7 @@ joblib
 memoized-property
 # termcolor
 mlflow
+
 
 # website
 streamlit
