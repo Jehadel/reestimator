@@ -7,10 +7,10 @@
 # LOCAL_PATH=XXX # exemple: PATH_TO_FILE_train_1k.csv
 
 # project id on GCP
-PROJECT_ID=XXX # exemple on my GCP account: 'wagon-bootcamp-323012'
+PROJECT_ID='wagon-bootcamp-322821'
 
 # bucket name on GCP
-BUCKET_NAME=XXX # exemple on my GCP account: 'wagon-data-662-gilard'
+BUCKET_NAME='reestimator'
 
 # # bucket directory in which to store the uploaded file (we choose to name this data as a convention)
 # BUCKET_FOLDER=data # convention folder then check that it is the good name in our project
@@ -98,7 +98,27 @@ gcp_submit_training:
 		--region ${REGION} \
 		--stream-logs
 
-##### Prediction API - - - - - - - - - - - - - - - - - - - - - - - - -
+# ----------------------------------
+#         HEROKU COMMANDS
+# ----------------------------------
+
+streamlit:
+	-@streamlit run # name_project.py
+
+heroku_login:
+	-@heroku login
+
+heroku_create_app:
+	-@heroku create ${APP_NAME}
+
+deploy_heroku:
+	-@git push heroku master
+	-@heroku ps:scale web=1##### Prediction API - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+# ----------------------------------
+#         PREDICT API COMMANDS
+# ----------------------------------
 
 run_api:
 	uvicorn api.fast:app --reload  # load web server with code autoreload

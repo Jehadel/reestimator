@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+import joblib
+import pandas as pd
+
 
 app = FastAPI()
 
@@ -24,6 +28,19 @@ app.add_middleware(
 def index():
     return {"greeting": "Hello world"}
 
-# @app.get("/predict") => Step to do when we have our predict function
-# def predict():
-    # pass
+@app.get("/predict") # => Step to do when we have our predict function
+def predict(): # add parameters to execute the function
+    """Enter the parameters used to execute the predict API,
+    to return the price per squared meter"""
+    # param_dict = {
+    #     "parameters": parameters # ex parameters : number of room, surface, name of municipality7
+    # }
+    # X_pred=pd.DataFrame(param_dict)
+    # model_pred = joblib.load("../model.joblib")
+    # reestimodel= model_pred.predict(X_pred)
+
+    # return dict(reestimodel=reestimodel[0])
+
+
+if __name__ == "__main__":
+    uvicorn.run("fast:app", host="0.0.0.0", port=2809)
