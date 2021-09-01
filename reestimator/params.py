@@ -1,13 +1,14 @@
 """
-IMPORT PARAMETERS FOR MAKEFILE
+IMPORT PARAMETERS FOR DOCKER COUNTAINER
 """
 # ----------------------------------
 #      GCP PARAMETERS (check which parameters to keep)
 # ----------------------------------
-PROJECT_ID= '<GCP Project Name>' # Name of the procject in GCP account
-BUCKET_NAME='<GCP Bucket Name>'
-BUCKET_FOLDER = 'Bucket folder'  # bucket directory in which to store the uploaded file
-BUCKET_TRAIN_DATA_PATH='<BUCKET_TRAIN_DATA_PATH>'
+PROJECT_ID = '<GCP Project Name>'  # Name of the project in GCP account ex: 'wagon-bootcamp-323012'
+BUCKET_NAME = '<GCP Bucket Name>'  # Name of the bucker in GCP account ex: 'wagon-data-662-gilard'
+EXPERIMENT_NAME = 'XXX'# Name of your experiment in the Le Wagon MLFlow server
+# BUCKET_FOLDER = 'Bucket folder'  # bucket directory in which to store the uploaded file
+# BUCKET_TRAIN_DATA_PATH='<BUCKET_TRAIN_DATA_PATH>'
 
 REGION='europe-west1'
 PYTHON_VERSION=3.7
