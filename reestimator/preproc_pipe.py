@@ -1,3 +1,4 @@
+
 # Import libraries
 import pandas as pd
 
@@ -91,6 +92,7 @@ class Preproc:
         return df_outliers
 
     def preproc_pipe(self):
+>>>>>>> a7842853c339dc650d357f77ef0b592d3460f780
         """
         Method that saves the model into a .joblib file
         and uploads it on Google Storage /models folder
