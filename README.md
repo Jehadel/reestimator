@@ -226,6 +226,89 @@ class dloading:
 
 ### exploration.py
 
+Methods (class Explration_data) to explore data
+
+class Exploration_data:
+
+  get_float_columns(self):
+        """
+        Get float columns
+        """
+
+
+  get_int_columns(self):
+        """
+        Get integer columns
+        """
+
+  get_object_columns(self):
+        """
+        Get object columns
+        """
+
+
+
+  get_count_of_missing_values(self):
+        """
+        Get count of missing values in DataFrame
+        """
+
+
+
+  get_columns_with_missing_values(self):  #df dataframe
+        """
+        Get columns with missing values
+        """
+
+
+
+  get_columns_without_missing_values(self):  #df dataframe
+        """
+        Get columns with out missing values
+        """
+
+
+
+  get_count_missing_vals_in_1column(self, col_name):  #df dataframe & col_name : name of column
+        """
+        Get the count of missing values in one column
+        """
+
+
+  visualize_feature_types(self):
+        """
+        Visualize a plot bar with the different types of features
+        """
+
+  visualize_type_local(self):
+        """
+        Visualize a plot bar with the number of each different types of local
+        """
+
+  visualize_lot_surface_columns(self):
+        """
+        Visualize a plot bar with the number of lot for columns "lot_number1-5"
+        """
+
+  visualize_lot_numero_columns(self):
+
+        L = [
+            'lot1_numero', 'lot2_numero', 'lot3_numero', 'lot4_numero',
+            'lot5_numero'
+        ]
+        K = []
+        for i in L:
+            m = self.get_count_missing_vals_in_1column(col_name=i)
+            K.append(m)
+
+        dx = pd.DataFrame({
+            'lot_numero': list(np.arange(1, 6)),
+            'count real values': K
+        })
+        dx.plot.bar(x='lot_numero',
+                    y='count real values',
+                    rot=0,
+                    color=plt.cm.Paired(np.arange(5)))
 
 
 
@@ -252,3 +335,118 @@ class Preprocessing_data:
 
   def cadastral_sector(df):
   _Get secteur_cadastral from id_parcelle and add a column to df_
+
+
+### Docker steps to GCP
+
+There are 2 remaining steps in order to enable the developers from anywhere around the world to play with it:
+
+- Push the Docker image to Google Container Registry
+- Deploy the image on Google Cloud Run so that it gets instantiated into a Docker container
+
+## 1) Push our prediction API image to Google Container Registry
+
+1) make sure to enable Google Container Registry API for your project in GCP:
+      https://console.cloud.google.com/flows/enableapi?apiid=containerregistry.googleapis.com&redirect=https://cloud.google.com/container-registry/docs/quickstart
+2) If your account is not listed then you have to authenticate:
+      gcloud auth login
+
+3) let’s configure the gcloud command for the usage of Docker:
+      gcloud auth configure-docker
+
+4) verify your config. You should see your GCP account and default project:
+      gcloud config list
+
+5) define an environment variable for the name of your project:
+      export PROJECT_ID=wagon-bootcamp-322821
+      echo $PROJECT_ID
+      gcloud config set project $PROJECT_ID
+
+6) define an environment variable for the name of your docker image:
+      export DOCKER_IMAGE_NAME= reestimator_docker_image
+      echo $DOCKER_IMAGE_NAME
+
+7) Now we are going to build our image =to have container:
+      docker build -t eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME .
+
+8) let’s make sure that our image runs correctly:
+      docker run -e PORT=8000 -p 8000:8000 eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME
+
+9) We can now push our image to Google Container Registry:
+      docker push eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME
+
+10) check the image in Google Container Registry
+      https://console.cloud.google.com/gcr/images/wagon-bootcamp-322821?project=wagon-bootcamp-322821
+
+
+## 2) Deploy the Container Registry image to Google Cloud Run
+
+We have pushed the Docker image for our Prediction API to Google Container Registry. The image is now available for deployment by Google services such as Cloud Run.
+We are going to deploy our image to production using Google Cloud Run.Cloud Run will instantiate the image into a container and run the CMD instruction inside of the Dockerfile of the image. This last step will start the uvicorn server serving our Prediction API to the world 🌍
+
+11) Let’s run one last command:
+      gcloud run deploy --image eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME --platform managed --region europe-west1
+
+
+12) Any developer in the world 🌍 is now able to browse to the deployed url and make a prediction using the API
+ATTENTION!!!!!!!!!!!!!!!!!!  Keep in mind that you pay for the service as long as it is up 💸
+
+## 3) Writing to Google Cloud Storage from Google Cloud Run
+
+13)  add your credentials to your image so that your code is allowed to push data to your bucket:
+      1) check the path to the Google Cloud Plaform credentials you created during setup day
+            echo $GOOGLE_APPLICATION_CREDENTIALS
+      2) update your Dockerfile with the correct path to your credentials file:
+            COPY /path/to/your/credentials.json /credentials.json
+
+14) And deploy the new image that is able to write to GCS:
+      gcloud run deploy \
+        --image eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME \
+        --platform managed \
+        --region europe-west1 \
+        --set-env-vars "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
+
+###OTHER CHOICE FOR A CONTINUOU+S DEPLOYMENT
+## 4) Create and configure a Cloud Run service for Continuous Deployment
+
+1) Go to Cloud Run.
+    https://console.cloud.google.com/run?project=wagon-bootcamp-322821&folder=&organizationId=
+
+2) Click on the Create Service button:
+    -Enter a name for your service
+    -Select a region on which to run the container of the project (for example europe-west1 for Belgium)
+    -Click Next
+
+3) Select Continuously deploy new revisions from a source repository:
+    -Click on Set up with Cloud Build
+
+4) Connect your GitHub account:
+    -Select GitHub as a repository provider
+    -Click on Authenticate to connect to your GitHub account
+
+5) Install the Google Cloud Build app on the project repository:
+    -Click Install Google Cloud Build
+    -If asked to, select the your GitHub account
+    -Check Only selected repositories
+    -Select the repository of your project (🚨 Container Registry will only work correctly with repositories having a name following the kebab-case naming convention: my-repo-name)
+    link to understand kebab-case: https://betterprogramming.pub/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841
+
+6) Select the source repository:
+    -Select the configured repository
+    -Read and check I understand …
+    -Click Next
+
+7) Configure your project:
+    -Select the branch of your repository on which new commits will trigger the CD (for example ^master$)
+    -Select the Dockerfile build type and enter the path to the Dockerfile in your project if required
+    -Click Save
+
+8) Select the parameters for the service:
+    -Allow all traffic
+    -Allow all unauthenticated invocations
+    -Click Create
+
+9) Get the production URL from the interface, it should look something like:
+    Exemple: https://lw-docker-test-xi54eseqrq-ew.a.run.app/
+
+10) Once your application is in production, as usual you will see the built image stored in Container Registry.

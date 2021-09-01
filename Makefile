@@ -1,4 +1,34 @@
 # ----------------------------------
+#  PARAMETERS FOR GCP/DOCKER/HEROKU
+# ----------------------------------
+# GCP PARAMETERS
+# ----------------------------------
+# path of the file to upload to gcp (the path of the file should be absolute or should match the directory where the make command is run)
+# LOCAL_PATH=XXX # exemple: PATH_TO_FILE_train_1k.csv
+
+# project id on GCP
+PROJECT_ID='wagon-bootcamp-322821'
+
+# bucket name on GCP
+BUCKET_NAME='reestimator'
+
+# # bucket directory in which to store the uploaded file (we choose to name this data as a convention)
+# BUCKET_FOLDER=data # convention folder then check that it is the good name in our project
+
+# # name for the uploaded file inside the bucket folder (here we choose to keep the name of the uploaded file)
+# # BUCKET_FILE_NAME=another_file_name_if_I_so_desire.csv
+# BUCKET_FILE_NAME=$(shell basename ${LOCAL_PATH})
+
+# # will store the packages uploaded to GCP for the training
+# BUCKET_TRAINING_FOLDER =XXX # folder name where is the trainer.py
+
+# # selected region to run our GCP
+# REGION=europe-west1
+
+# # name of the
+# JOB_NAME=taxi_fare_training_pipeline_$(shell date +'%Y%m%d_%H%M%S')
+
+# ----------------------------------
 #          INSTALL & TEST
 # ----------------------------------
 install_requirements:
@@ -55,10 +85,40 @@ pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
 
 
-# run_locally:
-# gcp_submit_training:
+run_locally:
+	@python -m ${PACKAGE_NAME}.${FILENAME}
 
-##### Prediction API - - - - - - - - - - - - - - - - - - - - - - - - -
+gcp_submit_training:
+	gcloud ai-platform jobs submit training ${JOB_NAME} \
+		--job-dir gs://${BUCKET_NAME}/${BUCKET_TRAINING_FOLDER} \
+		--package-path ${PACKAGE_NAME} \
+		--module-name ${PACKAGE_NAME}.${FILENAME} \
+		--python-version=${PYTHON_VERSION} \
+		--runtime-version=${RUNTIME_VERSION} \
+		--region ${REGION} \
+		--stream-logs
 
-# run_api:
-# 	uvicorn api.fast:app --reload  # load web server with code autoreload
+# ----------------------------------
+#         HEROKU COMMANDS
+# ----------------------------------
+
+streamlit:
+	-@streamlit run # name_project.py
+
+heroku_login:
+	-@heroku login
+
+heroku_create_app:
+	-@heroku create ${APP_NAME}
+
+deploy_heroku:
+	-@git push heroku master
+	-@heroku ps:scale web=1##### Prediction API - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+# ----------------------------------
+#         PREDICT API COMMANDS
+# ----------------------------------
+
+run_api:
+	uvicorn api.fast:app --reload  # load web server with code autoreload
