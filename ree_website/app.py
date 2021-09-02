@@ -271,7 +271,7 @@ param_dict = {
     "Appartement": [int(is_house)],
     "Maison": [int(is_appart)]
     }
-url = ""
+url = "https://reestimatordocker-jw6jz6q2fq-ew.a.run.app"
 if st.button('Prix estimé'):
     response = requests.get(url, params=param_dict).json()
     col1, col2 = st.columns(2)
