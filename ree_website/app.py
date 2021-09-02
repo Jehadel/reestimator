@@ -206,13 +206,72 @@ value = list(range(1, 17))
 """
 arrondissement = st.selectbox("",
                      value)
+
+
+dependancy = 0
+surface_terrain = 0
+arrondissements = np.zeros(16, 'int')
+index = (arrondissement + 7) % 16 - 1
+arrondissements[index] = 1  #vector of appartement presence concatenated
+
+if type_local == 'Maison':
+    local = np.array([0, 1])
+else:
+    local = np.array([1, 0])
+
+        #vector of appartement presence concatenated
+    """Enter the parameters used to execute the predict API,
+    to return the price per squared meter"""
+
+data_to_predict = np.concatenate(
+        (np.array([surface]), np.array([pieces]), np.array([surface_terrain]),
+         np.array([dependancy]), arrondissements, local))
+    # X_pred = pd.DataFrame(data_to_predict).T
+
+Arrondissement10=data_to_predict[4]
+Arrondissement11=data_to_predict[5]
+Arrondissement12=data_to_predict[6]
+Arrondissement13=data_to_predict[7]
+Arrondissement14=data_to_predict[8]
+Arrondissement15=data_to_predict[9]
+Arrondissement16=data_to_predict[10]
+Arrondissement1=data_to_predict[11]
+Arrondissement2=data_to_predict[12]
+Arrondissement3=data_to_predict[13]
+Arrondissement4=data_to_predict[14]
+Arrondissement5=data_to_predict[15]
+Arrondissement6=data_to_predict[16]
+Arrondissement7=data_to_predict[17]
+Arrondissement8=data_to_predict[18]
+Arrondissement9=data_to_predict[19]
+is_house=data_to_predict[20]
+is_appart=data_to_predict[21]
+
 param_dict = {
-    "type_local": type_local,
-    "surface": int(surface),
-    "pieces": int(pieces),
-    "arrondissement": int(arrondissement),
-}
-url = " "
+    "surface_reelle_bati": [int(surface)],
+    "nombre_pieces_principales": [int(pieces)],
+    "surface_terrain": [int(surface_terrain)],
+    "Dependency": [int(dependancy)],
+    "Marseille 10e Arrondissement": [int(Arrondissement10)],
+    "Marseille 11e Arrondissement": [int(Arrondissement11)],
+    "Marseille 12e Arrondissement": [int(Arrondissement12)],
+    "Marseille 13e Arrondissement": [int(Arrondissement13)],
+    "Marseille 14e Arrondissement": [int(Arrondissement14)],
+    "Marseille 15e Arrondissement": [int(Arrondissement15)],
+    "Marseille 16e Arrondissement": [int(Arrondissement16)],
+    "Marseille 1er Arrondissement": [int(Arrondissement1)],
+    "Marseille 2e Arrondissement": [int(Arrondissement2)],
+    "Marseille 3e Arrondissement": [int(Arrondissement3)],
+    "Marseille 4e Arrondissement": [int(Arrondissement4)],
+    "Marseille 5e Arrondissement": [int(Arrondissement5)],
+    "Marseille 6e Arrondissement": [int(Arrondissement6)],
+    "Marseille 7e Arrondissement": [int(Arrondissement7)],
+    "Marseille 8e Arrondissement": [int(Arrondissement8)],
+    "Marseille 9e Arrondissement": [int(Arrondissement9)],
+    "Appartement": [int(is_house)],
+    "Maison": [int(is_appart)]
+    }
+url = ""
 if st.button('Prix estimé'):
     response = requests.get(url, params=param_dict).json()
     col1, col2 = st.columns(2)

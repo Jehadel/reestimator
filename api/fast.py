@@ -122,7 +122,7 @@ def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10,
         "Maison": [int(is_appart)]
     }
     X_pred = pd.DataFrame(param_dict)
-    model_pred = joblib.load("../model.joblib")
+    model_pred = joblib.load("../RandomForest.joblib")
     reestimodel = model_pred.predict(X_pred)
     # y_pred = dict(reestimodel=reestimodel[0])
     # reesscore = model_pred.score(X_pred, y_pred)
