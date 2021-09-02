@@ -29,7 +29,7 @@ def index():
     return {"greeting": "Hell world"}
 
 @app.get("/predict") # => Step to do when we have our predict function
-def predict(pieces, surface, dependancy, Arrondissement10, Arrondissement11,
+def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10, Arrondissement11,
             Arrondissement12, Arrondissement13, Arrondissement14,
             Arrondissement15, Arrondissement16, Arrondissement1,
             Arrondissement2, Arrondissement3, Arrondissement4, Arrondissement5,
@@ -39,8 +39,9 @@ def predict(pieces, surface, dependancy, Arrondissement10, Arrondissement11,
     """Enter the parameters used to execute the predict API,
     to return the price per squared meter"""
     param_dict = {
+        "surface_reelle_bati":  [int(surface)],
         "nombre_pieces_principales": [int(pieces)],
-        "surface_terrain": [int(surface)],
+        "surface_terrain": [int(surface_terrain)],
         "Dependency": [int(dependancy)],
         "Marseille 10e Arrondissement": [int(Arrondissement10)],
         "Marseille 11e Arrondissement": [int(Arrondissement11)],
