@@ -39,3 +39,4 @@ mlflow
 
 # website
 streamlit
+geopy
