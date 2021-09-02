@@ -316,7 +316,7 @@ There are 2 remaining steps in order to enable the developers from anywhere arou
       gcloud config set project $PROJECT_ID
 
 6) define an environment variable for the name of your docker image:
-      export DOCKER_IMAGE_NAME=reestimator_docker_image
+      export DOCKER_IMAGE_NAME=reestimator_docker
       echo $DOCKER_IMAGE_NAME
 
 7) Now we are going to build our image =to have container:
@@ -344,9 +344,39 @@ We are going to deploy our image to production using Google Cloud Run.Cloud Run 
 12) Any developer in the world 🌍 is now able to browse to the deployed url and make a prediction using the API
 ATTENTION!!!!!!!!!!!!!!!!!!  Keep in mind that you pay for the service as long as it is up 💸
 
+**1er test**
 RESULTS : https://reestimatordockerimage-jw6jz6q2fq-ew.a.run.app
 Service name (reestimatordockerimage):  reestimatordockerimage
 API [run.googleapis.com] not enabled on project [607412583234].
+
+**2eme test**
+Service name (reestimatordocker):  reestimatordocker
+Allow unauthenticated invocations to [reestimatordocker] (y/N)?  y
+
+Deploying container to Cloud Run service [reestimatordocker] in project [wagon-bootcamp-323012] region [europe-west1]
+✓ Deploying new service... Done.
+  ✓ Creating Revision...
+  ✓ Routing traffic...
+  ✓ Setting IAM Policy...
+Done.
+Service [reestimatordocker] revision [reestimatordocker-00001-six] has been deployed and is serving 100 percent of traffic.
+Service URL: https://reestimatordocker-jw6jz6q2fq-ew.a.run.app
+
+**3eme test**
+
+➜  reestimator git:(krys_urldockerGCP) ✗ gcloud run deploy \
+    --image eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME \
+    --platform managed \
+    --region europe-west1 \
+    --set-env-vars "GOOGLE_APPLICATION_CREDENTIALS=/credentials.json"
+Service name (reestimatordocker):  reestimatordocker
+Deploying container to Cloud Run service [reestimatordocker] in project [wagon-bootcamp-323012] region [europe-west1]
+✓ Deploying... Done.
+  ✓ Creating Revision...
+  ✓ Routing traffic...
+Done.
+Service [reestimatordocker] revision [reestimatordocker-00002-for] has been deployed and is serving 100 percent of traffic.
+Service URL: https://reestimatordocker-jw6jz6q2fq-ew.a.run.app
 
 ## 3) Writing to Google Cloud Storage from Google Cloud Run
 
