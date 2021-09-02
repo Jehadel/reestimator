@@ -50,8 +50,11 @@ def predict(surface, pieces, arrondissement, type_local):  # add parameters to e
 
     data_to_predict = np.concatenate((np.array([surface]), np.array([pieces]), np.array([surface_terrain]), np.array([dependency]), arrondissements, local))
     X_pred=pd.DataFrame(data_to_predict).T
+
     model_pred = joblib.load("model.joblib")
-    reestimodel= model_pred.predict(X_pred)
+    test_scal = joblib.load('robustscaler.joblib')
+    X_scaled = test_scal.transform(X_pred)
+    reestimodel= model_pred.predict(X_scaled)
 
 
     return dict(reestimodel=reestimodel[0])
