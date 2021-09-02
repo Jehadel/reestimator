@@ -87,10 +87,10 @@ class Trainer():
             modelo = RandomForestRegressor(random_state = 42)
         else:
             if self.model == "XGBoost":
-                #modelo = xgb.XGBRegressor()
-                modelo = xgb.XGBRegressor(booster = 'gbtree', objective ='reg:squarederror',
-                                                colsample_bytree = 0.3, learning_rate = 0.35,
-                                      max_depth = 10, alpha = 0.1, n_estimators = 500)
+                modelo = xgb.XGBRegressor()
+                #modelo = xgb.XGBRegressor(booster = 'gbtree', objective ='reg:squarederror',
+                #                                colsample_bytree = 0.3, learning_rate = 0.35,
+                #                      max_depth = 10, alpha = 0.1, n_estimators = 500)
 
 
         return modelo
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # preparation datas
     #
     ####################
-    df_data = Data_loading().get_data_from_gcp(local=True)
+    df_data = Data_loading().get_data_from_gcp()
 
     encoder = Encoder(df_data)
     df_data = encoder.execute(col_name = 'nom_commune')
@@ -329,12 +329,12 @@ if __name__ == '__main__':
     #
     ########################
 
-    params_cv_lasso = {'alpha': stats.norm(0,3) , "fit_intercept": [True], 'max_iter': [50000]}
+    # params_cv_lasso = {'alpha': stats.norm(0,3) , "fit_intercept": [True], 'max_iter': [50000]}
 
-    traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'Lasso', params_cv_lasso, randomsearch_dict)
-    result = traitement.execute()
-    print(result)
-    traitement.save_model_to_gcp('Lasso')
+    # traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'Lasso', params_cv_lasso, randomsearch_dict)
+    # result = traitement.execute()
+    # print(result)
+    # traitement.save_model_to_gcp('Lasso')
 
 
     ######################
@@ -363,14 +363,6 @@ if __name__ == '__main__':
     #         'min_impurity_decrease': min_impurity_decrease
     #         }
 
-    # reg = 10
-    # forest = 10
-    # xgboost = 10
-
-    # randomsearch_dict = {"reg_iter": reg,
-    #                         "forest_iter": forest,
-    #                         "xgboost_iter": xgboost}
-
     # traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'RandomForest', params_cv_forest, randomsearch_dict)
     # result = traitement.execute()
     # print(result)
@@ -384,34 +376,17 @@ if __name__ == '__main__':
     #
     ########################
 
+    params_cv_XGBoost = {
+                         'booster': ['gbtree', 'dart'],
+                         'objective': ['reg:squarederror'],
+                         'colsample_bytree': [0.3],
+                         'learning_rate': [0.05, 0.08, 0.1, 0.12, 0.15],
+                         'max_depth': [10],
+                         'alpha': [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65],
+                         'n_estimators': [500]
+                         }
 
-    # n_estimators = [35, 40, 55]
-    #                                                                                     #in the random forest
-    # max_features = ['sqrt', 'log2'] # number of features in consideration at every split
-    # max_depth = [int(x) for x in np.linspace(10, 200, num = 5)] # maximum number of levels
-    #                                                                         #allowed in each decision tree
-    # min_samples_split = [0.1, 0.3, 0.5, 0.8] # minimum sample number to split a node
-    # min_samples_leaf = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # minimum sample number that can be stored in a leaf node
-    # min_impurity_decrease = [0.01, 0.1, 1, 5, 10]
-    # bootstrap = [True, False] # method used to sample data points
-
-    # params_cv_forest = {'n_estimators': n_estimators,
-    #         'max_features': max_features,
-    #         'max_depth': max_depth,
-    #         'min_samples_split': min_samples_split,
-    #         'min_samples_leaf': min_samples_leaf,
-    #         'bootstrap': bootstrap,
-    #         'min_impurity_decrease': min_impurity_decrease
-    #         }
-
-    # reg = 10
-    # forest = 10
-    # xgboost = 10
-
-    # randomsearch_dict = {"reg_iter": reg,
-    #                       "forest_iter": forest,
-    #                        "xgboost_iter": xgboost}
-
-    # traitement = Trainer(df_data, cols_removd_target, 'Prixm2', RobustScaler(), 'XGBoost', params_cv_xgboost, randomsearch_dict)
-    # traitement.execute()
-    # traitement.save_model_to_gcp('XGBoost')
+    traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'XGBoost', params_cv_XGBoost, randomsearch_dict)
+    result = traitement.execute()
+    print(result)
+    traitement.save_model_to_gcp('XGBoost4')
