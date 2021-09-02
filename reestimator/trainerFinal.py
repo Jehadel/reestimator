@@ -22,6 +22,8 @@ import xgboost as xgb
 from xgboost.sklearn import XGBRegressor
 from xgboost import plot_importance
 
+from scipy import stats
+
 BUCKET_NAME='reestimator'
 
 
@@ -47,8 +49,7 @@ class Trainer():
         # define dataset
         y = self.df[self.target_var]
         X = self.df[self.col_list]
-        print(self.col_list)
-        print(X.columns)
+
         return X,y
 
 
@@ -100,11 +101,11 @@ class Trainer():
 
         model.fit(X_train,y_train)
         y_pred = model.predict(X_test)
-        R2 = 100*(r2_score(y_test, y_pred))
+        R2 = r2_score(y_test, y_pred)
         MAE = round(mape(y_test, y_pred), 2)
         RMSE = round(rmse(y_test, y_pred), 2)
 
-        res = {'Model': self.model, 'R2' : R2, 'MAE': MAE, 'RMSE': RMSE}
+        res = {'Model': self.model, 'R2' : R2, 'MAPE': MAE, 'RMSE': RMSE}
         return res
 
 
@@ -153,7 +154,7 @@ class Trainer():
             search_case = RandomizedSearchCV(model, self.params_cv,
                                         n_iter=self.randomsearch_dict['reg_iter'],
                                             scoring= self.scor, n_jobs=-1,
-                                                cv=cv, random_state=1)
+                                                cv=cv, random_state=1, verbose=2)
 
         else:
             if self.model == "RandomForest":
@@ -190,16 +191,11 @@ class Trainer():
 
         X_train, X_test, y_train, y_test= self.holdout(X, y)
         X_train_sc, X_test_sc = self.scale(X_train, X_test)
-        print(X_train_sc[:5])
-        print(X_train_sc.shape)
-        print(y_train.shape)
-        print(type(X_train_sc))
-        print(type(y_train))
         res = search.fit(X_train_sc, y_train)
 
          # summarize result
-        print('Best Score: %s' % res.best_score_)
-        print('Best Hyperparameters: %s' % res.best_params_)
+        # print('Best Score: %s' % res.best_score_)
+        # print('Best Hyperparameters: %s' % res.best_params_)
 
         self.model = self.set_model(self.model)
 
@@ -291,15 +287,40 @@ if __name__ == '__main__':
             'adresse_nom_voie', 'adresse_code_voie',
     'code_commune', 'code_postal',
     'code_departement',
-    'id_parcelle', 'valeur_fonciere']
+    'id_parcelle', 'Prixm2', 'longitude', 'latitude','prixmetre','Unnamed: 0', 'Unnamed: 0.1']
 
 
     for i in columns_todrop:
         cols.remove(i)
 
     cols_removd_target = cols[:]
-    cols_removd_target.remove('Prixm2') # target variables are removed
+    cols_removd_target.remove('valeur_fonciere') # target variables are removed
 
+    # hard value for randomize search
+    reg = 10
+    forest = 10
+    xgboost = 10
+
+    randomsearch_dict = {"reg_iter": reg,
+    "forest_iter": forest,
+    "xgboost_iter": xgboost}
+
+    ######################
+    #
+    #    RIDGE
+    # Example of parameters for randomsearch for LASSO  model :**
+    #
+    ########################
+
+    # params_cv_ridge = {'alpha': stats.norm(0.9,3) , "fit_intercept": [True, False], "solver": ['auto']}
+
+
+
+
+    # traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'Ridge', params_cv_ridge, randomsearch_dict)
+    # result = traitement.execute()
+    # print(result)
+    # traitement.save_model_to_gcp('Ridge')
 
     ######################
     #
@@ -308,18 +329,80 @@ if __name__ == '__main__':
     #
     ########################
 
+    params_cv_lasso = {'alpha': stats.norm(0,3) , "fit_intercept": [True], 'max_iter': [50000]}
 
-    # n_estimators = [1, 10, 50, 100, 200]
+    traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'Lasso', params_cv_lasso, randomsearch_dict)
+    result = traitement.execute()
+    print(result)
+    traitement.save_model_to_gcp('Lasso')
+
+
+    ######################
+    #
+    #    RANDOM FOREST
+    #
+    ########################
+
+
+    # n_estimators = [10, 15, 20, 25]
     #                                                                                     #in the random forest
     # max_features = ['sqrt', 'log2'] # number of features in consideration at every split
-    # max_depth = [int(x) for x in np.linspace(10, 120, num = 3)] # maximum number of levels
+    # max_depth = [int(x) for x in np.linspace(10, 200, num = 5)] # maximum number of levels
     #                                                                         #allowed in each decision tree
     # min_samples_split = [0.1, 0.3, 0.5, 0.8] # minimum sample number to split a node
-    # min_samples_leaf = [0.1, 0.2, 0.3] # minimum sample number that can be stored in a leaf node
+    # min_samples_leaf = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # minimum sample number that can be stored in a leaf node
     # min_impurity_decrease = [0.01, 0.1, 1, 5, 10]
     # bootstrap = [True, False] # method used to sample data points
 
-    # params_cv_lasso =  {'fit__alpha':[0.001, 0.005, 0.01, 0.05, 0.1, 0.06]}
+    # params_cv_forest = {'n_estimators': n_estimators,
+    #         'max_features': max_features,
+    #         'max_depth': max_depth,
+    #         'min_samples_split': min_samples_split,
+    #         'min_samples_leaf': min_samples_leaf,
+    #         'bootstrap': bootstrap,
+    #         'min_impurity_decrease': min_impurity_decrease
+    #         }
+
+    # reg = 10
+    # forest = 10
+    # xgboost = 10
+
+    # randomsearch_dict = {"reg_iter": reg,
+    #                         "forest_iter": forest,
+    #                         "xgboost_iter": xgboost}
+
+    # traitement = Trainer(df_data, cols_removd_target, 'valeur_fonciere', RobustScaler(), 'RandomForest', params_cv_forest, randomsearch_dict)
+    # result = traitement.execute()
+    # print(result)
+    # traitement.save_model_to_gcp('RandomForest')
+
+
+    ######################
+    #
+    #    XGBOOST
+    # Example of parameters for randomsearch for Randomforest model :**
+    #
+    ########################
+
+
+    # n_estimators = [35, 40, 55]
+    #                                                                                     #in the random forest
+    # max_features = ['sqrt', 'log2'] # number of features in consideration at every split
+    # max_depth = [int(x) for x in np.linspace(10, 200, num = 5)] # maximum number of levels
+    #                                                                         #allowed in each decision tree
+    # min_samples_split = [0.1, 0.3, 0.5, 0.8] # minimum sample number to split a node
+    # min_samples_leaf = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # minimum sample number that can be stored in a leaf node
+    # min_impurity_decrease = [0.01, 0.1, 1, 5, 10]
+    # bootstrap = [True, False] # method used to sample data points
+
+    # params_cv_forest = {'n_estimators': n_estimators,
+    #         'max_features': max_features,
+    #         'max_depth': max_depth,
+    #         'min_samples_split': min_samples_split,
+    #         'min_samples_leaf': min_samples_leaf,
+    #         'bootstrap': bootstrap,
+    #         'min_impurity_decrease': min_impurity_decrease
+    #         }
 
     # reg = 10
     # forest = 10
@@ -329,46 +412,6 @@ if __name__ == '__main__':
     #                       "forest_iter": forest,
     #                        "xgboost_iter": xgboost}
 
-    # traitement = Trainer(df_data, cols_removd_target, 'Prixm2', RobustScaler(), 'RandomForest', params_cv_forest, randomsearch_dict)
+    # traitement = Trainer(df_data, cols_removd_target, 'Prixm2', RobustScaler(), 'XGBoost', params_cv_xgboost, randomsearch_dict)
     # traitement.execute()
-    # traitement.save_model_to_gcp('RandomForest')
-
-
-    ######################
-    #
-    #    RANDOM FOREST
-    # Example of parameters for randomsearch for Randomforest model :**
-    #
-    ########################
-
-
-    n_estimators = [1, 10, 50, 100, 200]
-                                                                                        #in the random forest
-    max_features = ['sqrt', 'log2'] # number of features in consideration at every split
-    max_depth = [int(x) for x in np.linspace(10, 120, num = 3)] # maximum number of levels
-                                                                            #allowed in each decision tree
-    min_samples_split = [0.1, 0.3, 0.5, 0.8] # minimum sample number to split a node
-    min_samples_leaf = [0.1, 0.2, 0.3] # minimum sample number that can be stored in a leaf node
-    min_impurity_decrease = [0.01, 0.1, 1, 5, 10]
-    bootstrap = [True, False] # method used to sample data points
-
-    params_cv_forest = {'n_estimators': n_estimators,
-            'max_features': max_features,
-            'max_depth': max_depth,
-            'min_samples_split': min_samples_split,
-            'min_samples_leaf': min_samples_leaf,
-            'bootstrap': bootstrap,
-            'min_impurity_decrease': min_impurity_decrease
-            }
-
-    reg = 10
-    forest = 10
-    xgboost = 10
-
-    randomsearch_dict = {"reg_iter": reg,
-                          "forest_iter": forest,
-                           "xgboost_iter": xgboost}
-
-    traitement = Trainer(df_data, cols_removd_target, 'Prixm2', RobustScaler(), 'RandomForest', params_cv_forest, randomsearch_dict)
-    traitement.execute()
-    traitement.save_model_to_gcp('RandomForest')
+    # traitement.save_model_to_gcp('XGBoost')
