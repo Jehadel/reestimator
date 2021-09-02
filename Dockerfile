@@ -2,7 +2,7 @@ FROM python:3.8.6-buster
 
 COPY api /api
 COPY requirements.txt /requirements.txt
-COPY model.joblib /model.joblib
+COPY RandomForest.joblib /RandomForest.joblib
 COPY reestimator /reestimator
 # COPY /path/to/your/credentials.json /credentials.json !!!!!!!!!!! Complete the path
 # to credential file from Jean GCP account cf. README to know how to do it
