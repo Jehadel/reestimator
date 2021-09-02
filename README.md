@@ -231,84 +231,37 @@ Methods (class Explration_data) to explore data
 class Exploration_data:
 
   get_float_columns(self):
-        """
-        Get float columns
-        """
-
+  _Get float columns_
 
   get_int_columns(self):
-        """
-        Get integer columns
-        """
+  _Get integer columns_
 
   get_object_columns(self):
-        """
-        Get object columns
-        """
-
-
+  _Get object columns_
 
   get_count_of_missing_values(self):
-        """
-        Get count of missing values in DataFrame
-        """
-
-
+  _Get count of missing values in DataFrame_
 
   get_columns_with_missing_values(self):  #df dataframe
-        """
-        Get columns with missing values
-        """
-
-
+  _Get columns with missing values_
 
   get_columns_without_missing_values(self):  #df dataframe
-        """
-        Get columns with out missing values
-        """
-
-
+  _Get columns with out missing values_
 
   get_count_missing_vals_in_1column(self, col_name):  #df dataframe & col_name : name of column
-        """
-        Get the count of missing values in one column
-        """
-
+  _Get the count of missing values in one column_
 
   visualize_feature_types(self):
-        """
-        Visualize a plot bar with the different types of features
-        """
+  _Visualize a plot bar with the different types of features_
 
   visualize_type_local(self):
-        """
-        Visualize a plot bar with the number of each different types of local
-        """
+  _Visualize a plot bar with the number of each different types of local_
 
   visualize_lot_surface_columns(self):
-        """
-        Visualize a plot bar with the number of lot for columns "lot_number1-5"
-        """
+  _Visualize a plot bar with the surface of lot for columns "lot number1-5"_
 
   visualize_lot_numero_columns(self):
-
-        L = [
-            'lot1_numero', 'lot2_numero', 'lot3_numero', 'lot4_numero',
-            'lot5_numero'
-        ]
-        K = []
-        for i in L:
-            m = self.get_count_missing_vals_in_1column(col_name=i)
-            K.append(m)
-
-        dx = pd.DataFrame({
-            'lot_numero': list(np.arange(1, 6)),
-            'count real values': K
-        })
-        dx.plot.bar(x='lot_numero',
-                    y='count real values',
-                    rot=0,
-                    color=plt.cm.Paired(np.arange(5)))
+  _Visualize a plot bar with  the number of lot for columns "lot number1-5"_
 
 
 
@@ -358,12 +311,12 @@ There are 2 remaining steps in order to enable the developers from anywhere arou
       gcloud config list
 
 5) define an environment variable for the name of your project:
-      export PROJECT_ID=wagon-bootcamp-322821
+      export PROJECT_ID=wagon-bootcamp-323012
       echo $PROJECT_ID
       gcloud config set project $PROJECT_ID
 
 6) define an environment variable for the name of your docker image:
-      export DOCKER_IMAGE_NAME= reestimator_docker_image
+      export DOCKER_IMAGE_NAME=reestimator_docker_image
       echo $DOCKER_IMAGE_NAME
 
 7) Now we are going to build our image =to have container:
@@ -376,7 +329,7 @@ There are 2 remaining steps in order to enable the developers from anywhere arou
       docker push eu.gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME
 
 10) check the image in Google Container Registry
-      https://console.cloud.google.com/gcr/images/wagon-bootcamp-322821?project=wagon-bootcamp-322821
+      https://console.cloud.google.com/gcr/images/wagon-bootcamp-323012?project=wagon-bootcamp-323012
 
 
 ## 2) Deploy the Container Registry image to Google Cloud Run
@@ -390,6 +343,10 @@ We are going to deploy our image to production using Google Cloud Run.Cloud Run 
 
 12) Any developer in the world 🌍 is now able to browse to the deployed url and make a prediction using the API
 ATTENTION!!!!!!!!!!!!!!!!!!  Keep in mind that you pay for the service as long as it is up 💸
+
+RESULTS : https://reestimatordockerimage-jw6jz6q2fq-ew.a.run.app
+Service name (reestimatordockerimage):  reestimatordockerimage
+API [run.googleapis.com] not enabled on project [607412583234].
 
 ## 3) Writing to Google Cloud Storage from Google Cloud Run
 
