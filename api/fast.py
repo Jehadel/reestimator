@@ -41,48 +41,51 @@ def index():
 #     # arrondissements[index] = 1  #vector of appartement presence concatenated
 #     # if type_local=='Maison':
 #     #     local=np.array([0,1])
-#     # else:
-#     #     local=np.array([1,0])
+# #     # else:
+# #     #     local=np.array([1,0])
 
-#     # data_to_predict = np.concatenate(
-#     #     (np.array([surface]), np.array([pieces]), np.array([surface_terrain]),
-#     #      np.array([dependency]), arrondissements, local))
-#     # X_pred = pd.DataFrame(data_to_predict).T
+# #     # data_to_predict = np.concatenate(
+# #     #     (np.array([surface]), np.array([pieces]), np.array([surface_terrain]),
+# #     #      np.array([dependency]), arrondissements, local))
+# #     # X_pred = pd.DataFrame(data_to_predict).T
 
 
-#     return print("arrondissement")
+# #     return print("arrondissement")
 
 
 @app.get("/predict") # => Step to do when we have our predict function
-# def predict(maison):  # add parameters to execute the function
+# def predict(surface, pieces, arrondissement,
+#             type_local):  # add parameters to execute the function
 
-#     # dependency=0
-#     # surface_terrain=0
-#     # arrondissements = np.zeros(16,'int')
-#     # index = (arrondissement + 7) % 16 - 1
-#     # arrondissements[index] = 1 #vector of appartement presence concatenated
-#     # test = int(surface) + int(pieces) + int(arrondissement)
-#     # if type_local=='Maison':
-#     #     local=np.array([0,1])
-#     # else:
-#     #     local=np.array([1,0])
+#     dependency = 0
+#     surface_terrain = 0
+#     arrondissements = np.zeros(16, 'int')
+#     index = (arrondissement + 7) % 16 - 1
+#     arrondissements[index] = 1  #vector of appartement presence concatenated
 
-#     test = pd.DataFrame()
+#     if type_local == 'Maison':
+#         local = np.array([0, 1])
+#     else:
+#         local = np.array([1, 0])
 
-#     #     #vector of appartement presence concatenated
-#     # """Enter the parameters used to execute the predict API,
-#     # to return the price per squared meter"""
+#         #vector of appartement presence concatenated
+#     """Enter the parameters used to execute the predict API,
+#     to return the price per squared meter"""
 
-#     # data_to_predict = np.concatenate((np.array([surface]), np.array([pieces]), np.array([surface_terrain]), np.array([dependency]), arrondissements, local))
-#     # X_pred=pd.DataFrame(data_to_predict).T
+#     data_to_predict = np.concatenate(
+#         (np.array([surface]), np.array([pieces]), np.array([surface_terrain]),
+#          np.array([dependency]), arrondissements, local))
+#     # X_pred = pd.DataFrame(data_to_predict).T
 
-#     # model_pred = joblib.load("model.joblib")
-#     # # test_scal = joblib.load('robustscaler.joblib')
+#     # model_pred = joblib.load("../RandomForest.joblib")
+#     # # test_scal = joblib.load('../robustscaler.joblib')
 #     # # X_scaled = test_scal.transform(X_pred)
-#     # reestimodel= model_pred.predict(X_pred)
+#     # reestimodel = model_pred.predict(X_pred)
+#     X_pred = pd.DataFrame(data_to_predict)
+#     model_pred = joblib.load("../RandomForest.joblib")
+#     reestimodel= model_pred.predict(X_pred)
 
-#     return test
-#     # return dict(reestimodel=reestimodel[0])
+#     return dict(reestimodel=reestimodel[0])
 
 
 def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10,
@@ -119,7 +122,7 @@ def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10,
         "Maison": [int(is_appart)]
     }
     X_pred = pd.DataFrame(param_dict)
-    model_pred = joblib.load("../RandomForest.joblib")
+    model_pred = joblib.load("../model.joblib")
     reestimodel = model_pred.predict(X_pred)
     # y_pred = dict(reestimodel=reestimodel[0])
     # reesscore = model_pred.score(X_pred, y_pred)
