@@ -28,7 +28,7 @@ class Cleaning_data:
 
     def conv_date(self, col_name):
         """
-        Convert a date str column 'col' to datetime format MM/DD/YYYY
+        Convert a date str column 'col' to datetime format YYYY-MM-DD
         """
         self.df[col_name] = pd.to_datetime(self.df[col_name], format='%m/%d/%Y')
 
@@ -116,4 +116,4 @@ if __name__ == '__main__':
     cleaner.df.shape
     cleaner.df.head(10)
     cleaner.df.tail(10)
-    dataloader.data_to_sql(cleaner.df, data_cleaned, 'replace')
+    dataloader.data_to_sql(cleaner.df, 'data_cleaned', 'replace')

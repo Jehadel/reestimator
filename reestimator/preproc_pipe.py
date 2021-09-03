@@ -7,7 +7,6 @@ class Preproc:
     def __init__(self, df):
         self.df = df
 
-
     def remove_dom_tom(self):
         """
         Function to remove DOM-TOM : 971 = Guadeloupe, 972=Martinique, 973=Guyane,
@@ -38,9 +37,9 @@ class Preproc:
         => Incohérence des données d'appartements par rapport aux maisons
         """
 
-        self.df=self.df[(self.df['code_departement'] != 18 & self.df['type_local']!='Maison')]
-        return self.df
 
+        filter = (self.df['code_departement'] == 18) & (self.df['type_local'] == 'Maison')
+        return self.df.drop(self.df[filter].index, axis=0, inplace = True)
 
     def create_pricemeter(self):
         """
@@ -52,16 +51,14 @@ class Preproc:
         # pd.options.display.float_format = '{:.2f}'.format  # pour remettre en format non scientifique
         return self.df
 
-
-
-    def drop_2quant(self, target='prixmetre', quant_inf=0.05, quant_sup=0.05):
+    def drop_2quant(self, df, target='prixmetre', quant_inf=0.05, quant_sup=0.95):
         """
         cuts a dataframe df values quantiles
         """
-        inf = self.df[target].quantile(q=quant_inf)
-        sup = self.df[target].quantile(q=quant_sup)
-        filter = (self.df[target] <= inf) | (self.df[target] >= sup)
-        return self.df.drop(self.df[filter].index, axis=0)
+        inf = df[target].quantile(q=quant_inf)
+        sup = df[target].quantile(q=quant_sup)
+        filter = (df[target] <= inf) | (df[target] >= sup)
+        return df.drop(df[filter].index, axis=0)
 
     def remove_outliers_1(self, target='prixmetre', area='code_departement', quant_inf = 0.05, quant_sup = 0.85):
         """
@@ -72,14 +69,12 @@ class Preproc:
             dropped = self.drop_2quant(self.df[self.df[area] == i], target, quant_inf = quant_inf, quant_sup = quant_sup)
             df_cut = pd.concat([df_cut, dropped])
             del dropped
-
+        self.df = df_cut
         return df_cut
-
 
     def remove_outliers_2(self, target='prixmetre', area='code_departement', quant_inf = 0.25, quant_sup = 0.75):
 
         df_outliers = pd.DataFrame()
-
         for i in self.df[area].unique():
             df_temp = self.df[self.df[area] == i]
             quant_inf = df_temp[target].quantile(0.25)
@@ -89,6 +84,7 @@ class Preproc:
                                                            <= quant_sup + 1.5 * IQR)
             filtered = df_temp.loc[filter]
             df_outliers = pd.concat([df_outliers, filtered], axis=0)
+        self.df = df_outliers
         return df_outliers
 
     def preproc_pipe(self):
@@ -101,4 +97,4 @@ class Preproc:
         self.remove_18_appart()
         self.create_pricemeter()
         df_outliers = self.remove_outliers_1()
-    return df_outliers
+        return df_outliers

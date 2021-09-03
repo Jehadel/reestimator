@@ -4,6 +4,8 @@ import pymysql
 import pandas as pd
 import numpy as np
 import sqlalchemy
+from google.cloud import storage
+#from ipdb import set_trace
 
 class Data_loading:
     """
@@ -33,7 +35,7 @@ class Data_loading:
     def load_data_chunk(self, table_name, chunksize):
 
         frame = pd.DataFrame()
-        for chunk_dataframe in pd.read_sql(f"""Select * from {table_name}""",
+        for chunk_dataframe in pd.read_sql(f"""SELECT * , ROUND(dwu.valeur_fonciere/dwu.surface_reelle_bati,0) AS Prixm2 FROM {table_name} dwu""",
                                            self.conn,
                                            chunksize=chunksize):
             print(f"Got dataframe w/{len(chunk_dataframe)} rows")
@@ -76,4 +78,19 @@ class Data_loading:
     def get_data(self, querystring):
         df = pd.read_sql(querystring, self.conn)
         return df
-      
+
+
+    #@simple_time_tracker
+    def get_data_from_gcp(self, nrows='all', local=False, **kwargs):
+        """method to get the training data (or a portion of it) from google cloud bucket"""
+        # Add Client() here
+        client = storage.Client()
+        if local:
+            path = "/media/jean/DATA/data_Marseille.csv"
+        else:
+            path = "gs://reestimator/data/data_Marseille.csv"
+        if nrows == 'all':
+            df = pd.read_csv(path)
+        else:
+            df = pd.read_csv(path, nrows=nrows)
+        return df
