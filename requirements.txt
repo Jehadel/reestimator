@@ -42,3 +42,4 @@ mlflow
 # website
 streamlit
 geopy
+xgboost
