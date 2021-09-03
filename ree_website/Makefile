@@ -38,3 +38,6 @@ clean:
 
 
 # -@rm model.joblib
+
+run_ree_website:
+  uvicorn ree_website.app:app --reload  # load web server with code autoreload
