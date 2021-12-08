@@ -86,8 +86,7 @@ def index():
 #     reestimodel= model_pred.predict(X_pred)
 
 #     return dict(reestimodel=reestimodel[0])
-
-
+            
 def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10,
             Arrondissement11, Arrondissement12, Arrondissement13,
             Arrondissement14, Arrondissement15, Arrondissement16,
@@ -122,7 +121,7 @@ def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10,
         "Maison": [int(is_appart)]
     }
     X_pred = pd.DataFrame(param_dict)
-    model_pred = joblib.load("../RandomForest.joblib")
+    model_pred = joblib.load("RandomForest.joblib")
     reestimodel = model_pred.predict(X_pred)
     # y_pred = dict(reestimodel=reestimodel[0])
     # reesscore = model_pred.score(X_pred, y_pred)
@@ -132,3 +131,7 @@ def predict(surface, pieces, surface_terrain, dependancy, Arrondissement10,
 
 if __name__ == "__main__":
     uvicorn.run("fast:app", host="0.0.0.0", port=2809)
+    
+    
+#http://127.0.0.1:8000/predict?surface=200&pieces=3&surface_terrain=0&dependancy=0&Arrondissement10=0&Arrondissement11=0&Arrondissement12=0&Arrondissement13=0&Arrondissement14=0&Arrondissement15=0&Arrondissement16=0&Arrondissement1=0&Arrondissement2=0&Arrondissement3=0&Arrondissement4=0&Arrondissement5=0&Arrondissement6=1&Arrondissement7=0&Arrondissement8=0&Arrondissement9=0&is_house=0&is_appart=1
+
